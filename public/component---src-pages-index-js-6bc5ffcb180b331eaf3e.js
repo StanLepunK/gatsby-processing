@@ -1,0 +1,2 @@
+(self.webpackChunkgatsby_starter_default=self.webpackChunkgatsby_starter_default||[]).push([[678],{7704:function(e,t,l){"use strict";l.r(t);var a=l(7294),n=(l(5444),l(5127)),r=l(3751);t.default=function(){return a.createElement(n.Z,null,a.createElement(r.Z,{title:"Home"}),a.createElement("h1",null,"Hello Creative Coder"),a.createElement("p",null,"Let's go to jump in a generative world of P5JS!"),a.createElement("p",null,"Template P5JS / Gatsby"),a.createElement("p",null,"version 0.0.1"))}}}]);
+//# sourceMappingURL=component---src-pages-index-js-6bc5ffcb180b331eaf3e.js.map
