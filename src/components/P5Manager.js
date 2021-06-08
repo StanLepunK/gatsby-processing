@@ -10,12 +10,12 @@
  * https://www.tutorialspoint.com/using-usecontext-in-react-js
  * https://blog.logrocket.com/guide-to-react-usereducer-hook/
  *
- * */
-import React from "react";
-import PropTypes from "prop-types";
-import { createContext, useContext } from "react";
-import { useReducer } from "react";
-import { useState } from "react";
+ */
+import React from "react"
+import PropTypes from "prop-types"
+import { createContext, useContext } from "react"
+import { useReducer } from "react"
+import { useState } from "react"
 
 const init_state = {
   x: 0,
@@ -24,53 +24,53 @@ const init_state = {
   w: 0,
   data: {},
   sketch: null,
-};
+}
 
-export const P5DispatchContext = createContext(() => {});
-export const P5StateContext = createContext(init_state);
+export const P5DispatchContext = createContext(() => {})
+export const P5StateContext = createContext(init_state)
 function reducer(state, action) {
   switch (action.type) {
     case "USE_SKETCH": {
-      return { ...state, sketch: action.payload };
+      return { ...state, sketch: action.payload }
     }
 
     case "SET_DATA": {
-      return { ...state, data: action.payload };
+      return { ...state, data: action.payload }
     }
 
     case "SET_X": {
-      return { ...state, x: action.payload };
+      return { ...state, x: action.payload }
     }
 
     case "SET_Y": {
-      return { ...state, y: action.payload };
+      return { ...state, y: action.payload }
     }
 
     case "SET_Z": {
-      return { ...state, z: action.payload };
+      return { ...state, z: action.payload }
     }
 
     case "SET_W": {
-      return { ...state, w: action.payload };
+      return { ...state, w: action.payload }
     }
 
     default: {
-      throw new Error(`Unhandled action type: ${action.type}`);
+      throw new Error(`Unhandled action type: ${action.type}`)
     }
   }
 }
 
 export default function P5Manager({ children }) {
-  const [state, dispatch] = useReducer(reducer, init_state);
+  const [state, dispatch] = useReducer(reducer, init_state)
   return (
     <P5DispatchContext.Provider value={dispatch}>
       <P5StateContext.Provider value={state}>
         {children}
       </P5StateContext.Provider>
     </P5DispatchContext.Provider>
-  );
+  )
 }
 
 P5Manager.propTypes = {
   children: PropTypes.any.isRequired,
-};
+}

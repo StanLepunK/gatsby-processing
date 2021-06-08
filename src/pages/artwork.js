@@ -39,9 +39,7 @@ function ComponentBuffer(props) {
     set_data(buf);
   }
 
-  return (
-    <props.comp sketch={my_sketch_background} data={state_data}></props.comp>
-  );
+  return <props.comp sketch={goban} data={state_data}></props.comp>;
 }
 
 /**
@@ -49,52 +47,195 @@ function ComponentBuffer(props) {
  * P5JS / PROCESSING SKETCH
  *
  */
-function my_sketch_background(p5) {
-  let ref = -1;
-  let bg_color;
-  let shape_color;
-  let size = p5.createVector(0, 0);
-  let pos = p5.createVector(0, 0);
-  let angle = 0;
+function goban(p5) {
+  // VARIABLE GLOBAL
+  const goban = [];
+  const stones = [];
+  const param = {
+    num: 19,
+    bg: 125,
+    fill: 255,
+    stroke: 0,
+    bg_alpha: 255,
+    fill_alpha: 255,
+    stroke_alpha: 255,
+    thickness: 1,
+    width: 20,
+    height: 20,
+    speed: 0.1,
+  };
+
+  // PROCESSING FUNCTION
   p5.setup = function () {
     p5.createCanvas(p5.windowWidth, p5.windowHeight);
     p5.windowResized = () => {
       p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
     };
-    bg_color = p5.color(p5.random(255), p5.random(255), p5.random(255));
-    set_shape();
+
+    init_goban(goban, param.num);
+    init_stones(stones, param.num);
   };
 
   p5.draw = function () {
-    p5.noStroke();
-    let new_ref = p5.data.value;
-    if (ref !== new_ref) {
-      bg_color = p5.color(p5.random(255), p5.random(255), p5.random(255));
-      set_shape();
-      ref = new_ref;
-    }
-
-    p5.background(bg_color);
-    p5.fill(shape_color);
-    p5.push();
-    p5.translate(p5.width / 2, p5.height / 2);
-    p5.push();
-    p5.rotate(angle);
-    // p5.rotate(p5.map(p5.mouseX, 0, p5.width, 0, p5.TAU));
-    p5.translate(-size.x / 2, -size.y / 2);
-
-    p5.rect(0, 0, size.x, size.y);
-    p5.pop();
+    p5.background(param.bg, param.bg_alpha);
+    // show_goban(goban);
+    // show_stones(stones);
+    apparence(param);
+    let_s_dance(stones, param);
   };
 
-  // MES FUNCTION
-  function set_shape() {
-    shape_color = p5.color(p5.random(255), p5.random(255), p5.random(255));
-    size.set(
-      p5.random(p5.width / 20, p5.width * 2),
-      p5.random(p5.height / 20, p5.height * 2)
-    );
-    pos.set(p5.width / 2 - size.x / 2, p5.height / 2 - size.y / 2);
-    angle = p5.random(p5.TAU);
+  p5.mousePressed = function () {
+    setting(param, goban, stones);
+  };
+
+  p5.keyPressed = function () {
+    if (p5.key === "a") {
+      set_apparence(param);
+    }
+    if (p5.key === "t") {
+      set_size(param);
+    }
+
+    if (p5.key === "v") {
+      set_speed(param);
+    }
+
+    if (p5.key === "n") {
+      set_num(param, goban, stones);
+    }
+  };
+
+  // MY FUNCTIONS
+  // SETTING
+  function setting(struc, goban, pierre) {
+    set_num(struc, goban, pierre);
+    set_apparence(struc);
+    set_size(struc);
+    set_speed(struc);
+  }
+
+  function set_speed(struc) {
+    struc.speed = p5.random(0, 0.5);
+  }
+
+  function set_num(struc, goban, stones) {
+    struc.num = p5.round(p5.random(3, 19));
+    goban.length = 0;
+    stones.length = 0;
+    init_goban(goban, struc.num);
+    init_stones(stones, struc.num);
+  }
+
+  function set_size(struc) {
+    struc.width = p5.random(p5.width / 30, p5.width);
+    struc.height = p5.random(p5.height / 30, p5.height);
+  }
+
+  function set_apparence(struc) {
+    struc.bg = p5.random(255);
+    struc.fill = p5.random(255);
+    struc.stroke = p5.random(255);
+    struc.bg_alpha = p5.random(255);
+    struc.fill_alpha = p5.random(255);
+    struc.stroke_alpha = p5.random(255);
+    struc.thickness = p5.random(10);
+  }
+
+  // MY ARTISTICS FUNCTIONS
+  function let_s_dance(list, data) {
+    let dist = 30;
+    for (let i = 0; i < list.length; i++) {
+      let pos_x = list[i].x;
+      let pos_y = list[i].y;
+      let distance = 10;
+      let ang = p5.frameCount * p5.pow(data.speed, 4);
+      dancing_stone(pos_x, pos_y, distance, ang, data);
+    }
+  }
+
+  function dancing_stone(x, y, radius, angle, data) {
+    let normal_pos_x = p5.cos(angle);
+    let normal_pos_y = p5.sin(angle);
+    let projection_x = normal_pos_x * radius;
+    let projection_y = normal_pos_y * radius;
+    let final_pos_x = x + projection_x;
+    let final_pos_y = y + projection_y;
+    let rot = p5.frameCount * 0.02;
+    turning_stone(final_pos_x, final_pos_y, data.width, data.height, rot);
+  }
+
+  function turning_stone(x, y, w, h, rotation) {
+    let offset_w = w / 2;
+    let offset_h = h / 2;
+    p5.push();
+    p5.translate(x, y);
+    p5.push();
+    p5.rotate(rotation);
+    p5.translate(-offset_w, -offset_h);
+    p5.rect(0, 0, w, h);
+    p5.pop();
+    p5.pop();
+  }
+
+  function apparence(struc) {
+    p5.fill(struc.fill, struc.fill_alpha);
+    p5.stroke(struc.stroke, struc.stroke_alpha);
+    p5.strokeWeight(struc.thickness);
+  }
+
+  // MY STONES FUNCTION
+  function show_stones(list) {
+    for (let i = 0; i < list.length; i++) {
+      p5.circle(list[i].x, list[i].y, 10);
+    }
+  }
+
+  function init_stones(list, size) {
+    let size_cell_x = p5.width / size;
+    let size_cell_y = p5.height / size;
+    let offset_x = size_cell_x / 2;
+    let offset_y = size_cell_y / 2;
+    for (let i = 0; i <= size; i++) {
+      for (let k = 0; k <= size; k++) {
+        let x = i * size_cell_x - offset_x;
+        let y = k * size_cell_y - offset_y;
+        list.push({
+          x: x,
+          y: y,
+          sx: size_cell_x,
+          sy: size_cell_y,
+          ox: offset_x,
+          oy: offset_y,
+        });
+      }
+    }
+  }
+
+  // MES FONCTIONS GOBAN
+  function show_goban(list) {
+    for (let i = 0; i < list.length; i++) {
+      p5.line(list[i].ax, list[i].ay, list[i].bx, list[i].by);
+    }
+  }
+
+  function init_goban(goban, size) {
+    let size_cell_x = p5.width / size;
+    let size_cell_y = p5.height / size;
+    let offset_x = size_cell_x / 2;
+    let offset_y = size_cell_y / 2;
+    for (let i = 0; i <= size; i++) {
+      // horizontal line
+      let ax_h = 0;
+      let ay_h = i * size_cell_y - offset_y;
+      let bx_h = p5.width;
+      let by_h = i * size_cell_y - offset_y;
+      goban.push({ ax: ax_h, ay: ay_h, bx: bx_h, by: by_h });
+      // vertical line
+      let ax_v = i * size_cell_x - offset_x;
+      let ay_v = 0;
+      let bx_v = i * size_cell_x - offset_x;
+      let by_v = p5.height;
+      goban.push({ ax: ax_v, ay: ay_v, bx: bx_v, by: by_v });
+    }
   }
 }
