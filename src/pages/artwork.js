@@ -49,6 +49,7 @@ function ComponentBuffer(props) {
  */
 function goban(p5) {
   // VARIABLE GLOBAL
+  let info_is = true;
   const goban = [];
   const stones = [];
   const param = {
@@ -82,6 +83,7 @@ function goban(p5) {
     // show_stones(stones);
     apparence(param);
     let_s_dance(stones, param);
+    show_gui(info_is);
   };
 
   p5.mousePressed = function () {
@@ -96,12 +98,16 @@ function goban(p5) {
       set_size(param);
     }
 
-    if (p5.key === "v") {
+    if (p5.key === "s") {
       set_speed(param);
     }
 
     if (p5.key === "n") {
       set_num(param, goban, stones);
+    }
+
+    if (p5.key === "i") {
+      info_is = info_is ? false : true;
     }
   };
 
@@ -139,6 +145,29 @@ function goban(p5) {
     struc.fill_alpha = p5.random(255);
     struc.stroke_alpha = p5.random(255);
     struc.thickness = p5.random(10);
+  }
+
+  // MY GUI INFO
+  function show_gui(is) {
+    if (is) {
+      let step = 20;
+      let pos = 0;
+      let x = 150;
+      let y = 25;
+      p5.noStroke();
+      // bg gui
+      p5.fill("yellow");
+      p5.rect(x - step, y, 200, 140);
+      //text
+      p5.fill("magenta");
+      p5.textAlign(p5.LEFT);
+      p5.text("i: show info", x, y + (pos += step));
+      p5.text("a: change apparence", x, y + (pos += step));
+      p5.text("t: change size", x, y + (pos += step));
+      p5.text("s: change speed", x, y + (pos += step));
+      p5.text("n: change quantity", x, y + (pos += step));
+      p5.text("mouse click change all settings", x, y + (pos += step));
+    }
   }
 
   // MY ARTISTICS FUNCTIONS
